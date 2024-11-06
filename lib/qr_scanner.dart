@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'order_screen.dart';
+import 'package:orderapp/admin_page.dart';
+import 'order_screen.dart';  // Ensure that the OrderPage class is defined in this file
 
 const bgColor = Color(0xfffafafa);
 
@@ -10,16 +11,17 @@ class QrScanner extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: bgColor,
-      
       body: Container(
         width: double.infinity,
         padding: EdgeInsets.all(16),
         child: Column(
           children: [
-            // First Expanded for the top content
+            // Space at the top
             SizedBox(height: 60),
+
+            // First Expanded for the top content
             Expanded(
-              
+              flex: 1,  // Adjust flex to control the height proportion
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -46,38 +48,42 @@ class QrScanner extends StatelessWidget {
               ),
             ),
 
-            // Second Expanded for the rounded box and button
+            // Second Expanded for the rounded box and ORDER button
             Expanded(
-              flex: 2,
+              flex: 2,  // Adjust flex to control the height proportion
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Rounded Square Box with Only Border
+                  // Rounded Square Box
                   Container(
-                    width: 200, // Width of the box
-                    height: 200, // Height of the box (making it square)
+                    width: 200,
+                    height: 200,
                     decoration: BoxDecoration(
                       border: Border.all(
-                        color: const Color.fromARGB(255, 103, 33, 243), // Border color
-                        width: 3, // Border width
+                        color: const Color.fromARGB(255, 103, 33, 243),
+                        width: 3,
                       ),
-                      borderRadius: BorderRadius.circular(20), // Rounded corners
+                      borderRadius: BorderRadius.circular(20),
                     ),
                   ),
-                  SizedBox(height: 20), // Add spacing between the box and the button
+                  SizedBox(height: 20),
 
-                  // Elevated Button
+                  // ORDER Button
                   ElevatedButton(
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => OrderScreen()),
+                        MaterialPageRoute(builder: (context) => OrderScreen()), // Corrected to OrderPage
                       );
                     },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,  // Background color
+                      padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                    ),
                     child: Text(
                       "ORDER",
                       style: TextStyle(
-                        color: Colors.black,
+                        color: Colors.white,  // Text color for contrast
                         fontSize: 18,
                         fontWeight: FontWeight.w500,
                         letterSpacing: 1,
@@ -88,19 +94,48 @@ class QrScanner extends StatelessWidget {
               ),
             ),
 
-            // Third Expanded for the bottom content (SCANTRON APP text)
+            // Third Expanded for the SCANTRON APP text and Admin button
             Expanded(
-              child: Container(
-                alignment: Alignment.center,
-                child: Text(
-                  "SCANTRON APP",
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1,
+              flex: 1,  // Adjust flex to control the height proportion
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // "SCANTRON APP" Text
+                  Text(
+                    "SCANTRON APP",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1,
+                    ),
                   ),
-                ),
+                  SizedBox(height: 10),
+
+                  // Admin Button
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => AdminPage()),
+                      );
+                    },
+                    icon: Icon(Icons.admin_panel_settings, color: Colors.black),  // Admin icon
+                    label: Text(
+                      "Admin",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        letterSpacing: 1,
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,  // White background for the button
+                      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
