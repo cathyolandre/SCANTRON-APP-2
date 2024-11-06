@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'models/order_counter.dart'; // Import the public OrderCounter class
 import 'receipt_screen.dart'; // Import the receipt screen
+import 'package:provider/provider.dart'; // Add provider import
+import 'models/stock_provider.dart'; // Add the StockProvider import
 
 class OrderScreen extends StatefulWidget {
   const OrderScreen({super.key});
@@ -100,16 +102,30 @@ class OrderScreenState extends State<OrderScreen> {
             // Submit Order Button
             ElevatedButton(
               onPressed: () {
-                // Navigate to the receipt screen with order details
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ReceiptScreen(
-                      orderQuantity: _orderCounter.orderCount,
-                      totalPrice: totalPrice,
+                // Get the current stock value from StockProvider
+                int currentStock = Provider.of<StockProvider>(context, listen: false).stock;
+
+                // Check if enough stock is available
+                if (_orderCounter.orderCount <= currentStock) {
+                  // Proceed with the order and reduce the stock in the provider
+                  Provider.of<StockProvider>(context, listen: false).restock(currentStock - _orderCounter.orderCount);
+
+                  // Navigate to the receipt screen with order details
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ReceiptScreen(
+                        orderQuantity: _orderCounter.orderCount,
+                        totalPrice: totalPrice,
+                      ),
                     ),
-                  ),
-                );
+                  );
+                } else {
+                  // Show an error message if stock is insufficient
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Not enough stock available')),
+                  );
+                }
               },
               child: Text(
                 "Place Order",
