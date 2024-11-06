@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:orderapp/qrgenerate.dart';
 import 'view_report_page.dart'; // Make sure this page exists if you have it for reports
 import 'inventory_page.dart'; // Make sure this page exists for inventory management
 
@@ -73,6 +74,30 @@ class AdminPage extends StatelessWidget {
                   );
                 },
                 icon: Icon(Icons.inventory, color: Colors.black, size: 40), // Increased icon size
+                label: SizedBox.shrink(), // No text
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color.fromARGB(255, 243, 243, 243),
+                  padding: EdgeInsets.symmetric(vertical: 50, horizontal: 20),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  minimumSize: Size(double.infinity, 50),
+                ),
+              ),
+            ),
+            SizedBox(height: 20),
+
+            //QR GEN
+             SizedBox(
+              width: double.infinity, // Make sure buttons take full width
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => Qrgenerate()),
+                  );
+                },
+                icon: Icon(Icons.qr_code_rounded, color: Colors.black, size: 40), // Increased icon size
                 label: SizedBox.shrink(), // No text
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 243, 243, 243),

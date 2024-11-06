@@ -37,6 +37,7 @@ dependencies:
   mobile_scanner: ^6.0.2
   provider: ^6.0.1
   intl: ^0.18.0
+  pretty_qr_code: ^3.3.0
 
 dev_dependencies:
   flutter_test:
