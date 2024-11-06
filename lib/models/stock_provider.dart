@@ -1,17 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:orderapp/view_report_page.dart';
 
-class StockProvider with ChangeNotifier {
-  int _stock = 100; // Initial stock value
+class StockProvider extends ChangeNotifier {
+  int _stock = 200;
+  final List<Report> _transactions = []; // Add a list of transactions
 
-  // Getter for the stock
   int get stock => _stock;
 
-  // Method to update stock
+  // Add a method to add a new transaction to the list
+  List<Report> get transactions => _transactions;
+
   void restock(int newStock) {
-    // Make sure stock is within the allowed range (0 to 200)
-    if (newStock >= 0 && newStock <= 200) {
-      _stock = newStock;
-      notifyListeners(); // Notify listeners to update UI
-    }
+    _stock = newStock;
+    notifyListeners();
+  }
+
+  // Add a new transaction
+  void addTransaction(int orderQuantity, double totalPrice) {
+    _transactions.insert(
+      0, // Add the new transaction at the top
+      Report(
+        orderQuantity: orderQuantity,
+        totalPrice: totalPrice,
+        date: DateTime.now(),
+      ),
+    );
+    notifyListeners();
   }
 }

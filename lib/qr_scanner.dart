@@ -60,7 +60,7 @@ class QrScanner extends StatelessWidget {
                     height: 200,
                     decoration: BoxDecoration(
                       border: Border.all(
-                        color: const Color.fromARGB(255, 103, 33, 243),
+                        color: const Color.fromARGB(255, 0, 0, 0),
                         width: 3,
                       ),
                       borderRadius: BorderRadius.circular(20),
@@ -77,7 +77,7 @@ class QrScanner extends StatelessWidget {
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,  // Background color
+                      backgroundColor: const Color.fromARGB(255, 0, 0, 0),  // Background color
                       padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
                     ),
                     child: Text(

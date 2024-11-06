@@ -12,14 +12,14 @@ class AdminPage extends StatelessWidget {
         title: Text(
           'Admin Panel',
           style: TextStyle(
-            color: Colors.black,
+            color: const Color.fromARGB(255, 255, 255, 255),
             fontSize: 18,
             fontWeight: FontWeight.w500,
             letterSpacing: 1,
           ),
         ),
         centerTitle: true,
-        backgroundColor: Colors.redAccent,
+        backgroundColor: const Color.fromARGB(255, 0, 0, 0),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -48,12 +48,11 @@ class AdminPage extends StatelessWidget {
                     MaterialPageRoute(builder: (context) => ViewReportPage()),
                   );
                 },
-                icon: Icon(Icons.receipt_long, color: Colors.black),
-                label: Text("View Reports"),
+                icon: Icon(Icons.receipt_long, color: Colors.black, size: 40), // Increased icon size
+                label: SizedBox.shrink(), // No text
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 243, 243, 243),
                   padding: EdgeInsets.symmetric(vertical: 50, horizontal: 20),
-                  textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
@@ -65,7 +64,7 @@ class AdminPage extends StatelessWidget {
 
             // Button for managing inventory with rounded corners
             SizedBox(
-              width: double.infinity, 
+              width: double.infinity,
               child: ElevatedButton.icon(
                 onPressed: () {
                   Navigator.push(
@@ -73,12 +72,11 @@ class AdminPage extends StatelessWidget {
                     MaterialPageRoute(builder: (context) => InventoryPage()),
                   );
                 },
-                icon: Icon(Icons.inventory, color: Colors.black),
-                label: Text("Manage Inventory"),
+                icon: Icon(Icons.inventory, color: Colors.black, size: 40), // Increased icon size
+                label: SizedBox.shrink(), // No text
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 243, 243, 243),
                   padding: EdgeInsets.symmetric(vertical: 50, horizontal: 20),
-                  textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
@@ -95,12 +93,11 @@ class AdminPage extends StatelessWidget {
                 onPressed: () {
                   Navigator.pop(context); // Go back to the previous screen
                 },
-                icon: Icon(Icons.home, color: Colors.black),
-                label: Text("Back to Home"),
+                icon: Icon(Icons.home, color: Colors.black, size: 40), // Increased icon size
+                label: SizedBox.shrink(), // No text
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 243, 243, 243),
                   padding: EdgeInsets.symmetric(vertical: 50, horizontal: 20),
-                  textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),

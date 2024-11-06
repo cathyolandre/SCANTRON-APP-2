@@ -12,15 +12,11 @@ class OrderScreen extends StatefulWidget {
 }
 
 class OrderScreenState extends State<OrderScreen> {
-  // Create an instance of OrderCounter
   final OrderCounter _orderCounter = OrderCounter();
-
-  // Price per item
-  final double pricePerItem = 5.0; // Example price per paper
+  final double pricePerItem = 5.0;
 
   @override
   Widget build(BuildContext context) {
-    // Calculate total price
     double totalPrice = _orderCounter.orderCount * pricePerItem;
 
     return Scaffold(
@@ -40,7 +36,6 @@ class OrderScreenState extends State<OrderScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Order counter display
             Text(
               'Order Quantity:',
               style: TextStyle(
@@ -50,7 +45,6 @@ class OrderScreenState extends State<OrderScreen> {
               ),
             ),
             SizedBox(height: 20),
-            // Display the current order count
             Text(
               '${_orderCounter.orderCount}',
               style: TextStyle(
@@ -60,7 +54,6 @@ class OrderScreenState extends State<OrderScreen> {
               ),
             ),
             SizedBox(height: 20),
-            // Buttons to increment or decrement the order count
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -84,12 +77,10 @@ class OrderScreenState extends State<OrderScreen> {
               ],
             ),
             SizedBox(height: 30),
-            
-            // Price display at the bottom
             Padding(
               padding: const EdgeInsets.only(bottom: 20),
               child: Text(
-                'Total Price: ₱${totalPrice.toStringAsFixed(2)}',  // Display total price
+                'Total Price: ₱${totalPrice.toStringAsFixed(2)}',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -99,18 +90,20 @@ class OrderScreenState extends State<OrderScreen> {
               ),
             ),
             SizedBox(height: 1),
-            // Submit Order Button
             ElevatedButton(
               onPressed: () {
-                // Get the current stock value from StockProvider
                 int currentStock = Provider.of<StockProvider>(context, listen: false).stock;
 
-                // Check if enough stock is available
                 if (_orderCounter.orderCount <= currentStock) {
-                  // Proceed with the order and reduce the stock in the provider
-                  Provider.of<StockProvider>(context, listen: false).restock(currentStock - _orderCounter.orderCount);
+                  Provider.of<StockProvider>(context, listen: false)
+                      .restock(currentStock - _orderCounter.orderCount);
 
-                  // Navigate to the receipt screen with order details
+                  // Save the transaction in StockProvider
+                  Provider.of<StockProvider>(context, listen: false).addTransaction(
+                    _orderCounter.orderCount,
+                    totalPrice,
+                  );
+
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -121,7 +114,6 @@ class OrderScreenState extends State<OrderScreen> {
                     ),
                   );
                 } else {
-                  // Show an error message if stock is insufficient
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Not enough stock available')),
                   );

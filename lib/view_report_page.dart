@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'models/stock_provider.dart';
+import 'package:intl/intl.dart'; // Import intl package for date formatting
 
 class Report {
   final int orderQuantity;
@@ -9,17 +12,16 @@ class Report {
 }
 
 class ViewReportPage extends StatelessWidget {
- ViewReportPage({super.key});
-
-  // Sample data for the report
-  final List<Report> reports = [
-    Report(orderQuantity: 5, totalPrice: 25.0, date: DateTime.now().subtract(Duration(days: 1))),
-    Report(orderQuantity: 3, totalPrice: 15.0, date: DateTime.now().subtract(Duration(days: 2))),
-    Report(orderQuantity: 7, totalPrice: 35.0, date: DateTime.now().subtract(Duration(days: 3))),
-  ];
+  const ViewReportPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // Get the list of transactions from StockProvider
+    final transactions = Provider.of<StockProvider>(context).transactions;
+
+    // Create a DateFormat instance to format the date
+    final DateFormat dateFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -42,19 +44,17 @@ class ViewReportPage extends StatelessWidget {
               ),
             ),
             SizedBox(height: 20),
-            
-            // List of reports
             Expanded(
               child: ListView.builder(
-                itemCount: reports.length,
+                itemCount: transactions.length,
                 itemBuilder: (context, index) {
-                  final report = reports[index];
+                  final report = transactions[index];
                   return Card(
                     margin: EdgeInsets.symmetric(vertical: 8),
                     child: ListTile(
                       leading: Icon(Icons.receipt_long, color: Colors.teal),
                       title: Text(
-                        'Order Date: ${report.date.toLocal()}'.split(' ')[0],
+                        'Order Date: ${dateFormat.format(report.date)}',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       subtitle: Column(

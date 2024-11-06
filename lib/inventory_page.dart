@@ -6,10 +6,10 @@ class InventoryPage extends StatefulWidget {
   const InventoryPage({super.key});
 
   @override
-  _InventoryPageState createState() => _InventoryPageState();
+  InventoryPageState createState() => InventoryPageState();
 }
 
-class _InventoryPageState extends State<InventoryPage> {
+class InventoryPageState extends State<InventoryPage> {
   final TextEditingController _stockController = TextEditingController();
   String _currentInput = ''; // Store the current input to be directly assigned to stock
 
@@ -129,7 +129,7 @@ class _InventoryPageState extends State<InventoryPage> {
                   child: Card(
                     margin: const EdgeInsets.all(5),
                     elevation: 5,
-                    color: Colors.blueAccent,
+                    color: const Color.fromARGB(255, 0, 0, 0),
                     child: Center(
                       child: Text(
                         buttonText,
