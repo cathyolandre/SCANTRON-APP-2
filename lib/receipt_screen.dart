@@ -7,18 +7,14 @@ class ReceiptScreen extends StatelessWidget {
 
   // Constructor to pass order quantity and total price to the ReceiptScreen
   const ReceiptScreen({
-    Key? key,
+    super.key,
     required this.orderQuantity,
     required this.totalPrice,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Receipt', style: TextStyle(color: Colors.black)),
-        centerTitle: true,
-      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -67,21 +63,61 @@ class ReceiptScreen extends StatelessWidget {
               'Thank you for your order!',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 30),
+            SizedBox(height: 50),
 
-            // Option to go back to the main screen or home
-            Center(
-              child: ElevatedButton(
-                onPressed: () {
-                 Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => QrScanner()),
-                  );
-                },
-                
-                child: Text('Back to Home'),
-              ),
+               // Option to go back to the main screen or home
+           Center(
+            child: Column(
+              children: [
+                // Back to Home button with icon
+                ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => QrScanner()),
+                    );
+                  },
+                  icon: Icon(Icons.home, color: Colors.black), // Add home icon
+                  label: Text(
+                    'Back to Home',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      letterSpacing: 1,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  ),
+                ),
+                SizedBox(height: 10), // Spacing between buttons
+
+                // Print Receipt button with icon
+                ElevatedButton.icon(
+                  onPressed: () {
+                    // Implement print functionality here
+                  },
+                  icon: Icon(Icons.print, color: Colors.black), // Add print icon
+                  label: Text(
+                    'Print Receipt',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      letterSpacing: 1,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  ),
+                ),
+              ],
             ),
+          )
+
           ],
         ),
       ),

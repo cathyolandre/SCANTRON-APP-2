@@ -6,10 +6,10 @@ class OrderScreen extends StatefulWidget {
   const OrderScreen({super.key});
 
   @override
-  _OrderScreenState createState() => _OrderScreenState();
+  OrderScreenState createState() => OrderScreenState();
 }
 
-class _OrderScreenState extends State<OrderScreen> {
+class OrderScreenState extends State<OrderScreen> {
   // Create an instance of OrderCounter
   final OrderCounter _orderCounter = OrderCounter();
 

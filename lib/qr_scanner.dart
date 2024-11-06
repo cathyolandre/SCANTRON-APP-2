@@ -10,14 +10,16 @@ class QrScanner extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: bgColor,
-      appBar: AppBar(),
+      
       body: Container(
         width: double.infinity,
         padding: EdgeInsets.all(16),
         child: Column(
           children: [
             // First Expanded for the top content
+            SizedBox(height: 60),
             Expanded(
+              
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
