@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "716693143326",
+    "project_id": "scantron-app",
+    "storage_bucket": "scantron-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:716693143326:android:a14be5313a2da5edd4530f",
+        "android_client_info": {
+          "package_name": "com.example.orderapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC3HKa1Yjve_smdmUKa8H2g7ayutW1fzVM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

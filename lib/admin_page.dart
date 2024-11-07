@@ -94,7 +94,7 @@ class AdminPage extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => Qrgenerate()),
+                    MaterialPageRoute(builder: (context) => QRCodeGenerationPage()),
                   );
                 },
                 icon: Icon(Icons.qr_code_rounded, color: Colors.black, size: 40), // Increased icon size
