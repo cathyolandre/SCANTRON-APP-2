@@ -34,11 +34,21 @@ class QRCodeGenerationPageState extends State<QRCodeGenerationPage> {
     setState(() {
       _qrData = uniqueCode;
     });
+
+    // Show a confirmation message
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('QR Code generated and saved!')),
+    );
   }
 
   // Function to store customer code in Firestore
   Future<void> _storeCustomerCode(String customerInfo, String code) async {
     try {
+      // Print the code before saving it to Firestore
+      if (kDebugMode) {
+        print("Saving customer code: $code");
+      }
+
       // Reference to Firestore collection
       final collection = FirebaseFirestore.instance.collection('customer_codes');
 
@@ -49,10 +59,12 @@ class QRCodeGenerationPageState extends State<QRCodeGenerationPage> {
         'timestamp': FieldValue.serverTimestamp(),  // Save timestamp
       });
 
+      // Confirm successful saving
       if (kDebugMode) {
         print("Customer code stored successfully!");
       }
     } catch (e) {
+      // Catch any errors and print them
       if (kDebugMode) {
         print("Error storing customer code: $e");
       }
@@ -64,6 +76,7 @@ class QRCodeGenerationPageState extends State<QRCodeGenerationPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text("QR Code Generator"),
+        backgroundColor: const Color.fromARGB(255, 0, 0, 0),  // Set app bar color (optional)
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -71,6 +84,7 @@ class QRCodeGenerationPageState extends State<QRCodeGenerationPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             TextField(
+              text: const Color.fromARGB(255, 255, 255, 255),
               controller: _customerInfoController,
               decoration: InputDecoration(
                 labelText: "Enter Customer Info (e.g., ID or Name)",
