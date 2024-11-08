@@ -67,56 +67,29 @@ class ReceiptScreen extends StatelessWidget {
 
                // Option to go back to the main screen or home
            Center(
-            child: Column(
-              children: [
-                // Back to Home button with icon
-                ElevatedButton.icon(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => QrScanner()),
-                    );
-                  },
-                  icon: Icon(Icons.home, color: Colors.black), // Add home icon
-                  label: Text(
-                    'Back to Home',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      letterSpacing: 1,
-                    ),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                  ),
+            child: ElevatedButton.icon(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => QrScanner()),
+                );
+              },
+              icon: Icon(
+                Icons.home, 
+                color: Colors.black, 
+                size: 24, // Adjust icon size as needed
+              ),
+              label: SizedBox.shrink(), // No text label, just the icon
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                padding: EdgeInsets.symmetric(vertical: 15, horizontal: 25), // Adjust button padding
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30), // Optional: rounded corners for button
                 ),
-                SizedBox(height: 10), // Spacing between buttons
-
-                // Print Receipt button with icon
-                ElevatedButton.icon(
-                  onPressed: () {
-                    // Implement print functionality here
-                  },
-                  icon: Icon(Icons.print, color: Colors.black), // Add print icon
-                  label: Text(
-                    'Print Receipt',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      letterSpacing: 1,
-                    ),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                  ),
-                ),
-              ],
+              ),
             ),
-          )
+          ),
+
 
           ],
         ),

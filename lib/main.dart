@@ -1,10 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:orderapp/qr_scanner.dart';
-import 'package:provider/provider.dart'; // Import the provider package
-import 'models/stock_provider.dart'; // Import the stock provider
-import 'package:firebase_core/firebase_core.dart'; // Import Firebase Core
-import 'firebase_options.dart'; // Import the generated Firebase options
+import 'package:provider/provider.dart'; 
+import 'models/stock_provider.dart'; 
+import 'package:firebase_core/firebase_core.dart'; 
+import 'firebase_options.dart'; 
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

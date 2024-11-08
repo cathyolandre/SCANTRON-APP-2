@@ -1,7 +1,8 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firestore
+import 'package:screenshot/screenshot.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart'; // Add Firebase Firestore package
 
 class QRCodeGenerationPage extends StatefulWidget {
   const QRCodeGenerationPage({super.key});
@@ -13,105 +14,108 @@ class QRCodeGenerationPage extends StatefulWidget {
 class QRCodeGenerationPageState extends State<QRCodeGenerationPage> {
   final TextEditingController _customerInfoController = TextEditingController();
   String _qrData = '';
+  final ScreenshotController _screenshotController = ScreenshotController();
 
-  // Function to generate a unique code for the customer based on entered info
+  // Initialize Firebase and Firestore
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
   String _generateUniqueCode(String customerInfo) {
-    // Example unique identifier based on customer info and timestamp
     final timestamp = DateTime.now().millisecondsSinceEpoch;
     return 'CUSTOMER-$customerInfo-$timestamp';
   }
 
-  // Function to handle QR code generation and storage
+  // Save QR code data to Firebase Firestore
+  Future<void> _saveQRCodeDataToFirestore(String customerInfo, String qrData) async {
+    try {
+      await _firestore.collection('qr_codes').add({
+        'customerInfo': customerInfo,
+        'qrData': qrData,
+        'timestamp': FieldValue.serverTimestamp(),
+      });
+      debugPrint('QR Code saved to Firestore!');
+    } catch (e) {
+      debugPrint("Error saving QR code to Firestore: $e");
+    }
+  }
+
   Future<void> _generateAndSaveQRCode() async {
     final customerInfo = _customerInfoController.text;
-    if (customerInfo.isEmpty) return;  // Ensure info is provided
+    if (customerInfo.isEmpty) return;
 
     final uniqueCode = _generateUniqueCode(customerInfo);
 
-    // Store the generated code for this customer in Firestore
-    await _storeCustomerCode(customerInfo, uniqueCode);
-
+    if (!mounted) return;
     setState(() {
       _qrData = uniqueCode;
     });
 
-    // Show a confirmation message
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('QR Code generated and saved!')),
-    );
+    // Save the generated QR code data to Firestore
+    await _saveQRCodeDataToFirestore(customerInfo, uniqueCode);
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('QR Code generated and saved to Firestore!')),
+      );
+    }
   }
 
-  // Function to store customer code in Firestore
-  Future<void> _storeCustomerCode(String customerInfo, String code) async {
-    try {
-      // Print the code before saving it to Firestore
-      if (kDebugMode) {
-        print("Saving customer code: $code");
-      }
-
-      // Reference to Firestore collection
-      final collection = FirebaseFirestore.instance.collection('customer_codes');
-
-      // Store customer code in the Firestore collection
-      await collection.add({
-        'customer_info': customerInfo,  // Store customer info (e.g., name or ID)
-        'unique_code': code,            // Store the generated code
-        'timestamp': FieldValue.serverTimestamp(),  // Save timestamp
-      });
-
-      // Confirm successful saving
-      if (kDebugMode) {
-        print("Customer code stored successfully!");
-      }
-    } catch (e) {
-      // Catch any errors and print them
-      if (kDebugMode) {
-        print("Error storing customer code: $e");
-      }
+  Future<void> _downloadQRCode() async {
+    final directory = await getExternalStorageDirectory();
+    if (directory == null) {
+      debugPrint("Error: Directory not found!");
+      return;
     }
+
+    final filePath = '${directory.path}/qr_code.png';  // Check file path
+    debugPrint("Saving QR Code to: $filePath");
+
+    _screenshotController.captureAndSave(directory.path, fileName: "qr_code.png").then((value) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('QR Code saved to: $filePath')),
+        );
+      }
+    }).catchError((e) {
+      debugPrint("Error saving QR Code: $e");
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("QR Code Generator"),
-        backgroundColor: const Color.fromARGB(255, 0, 0, 0),  // Set app bar color (optional)
-      ),
+      appBar: AppBar(title: Text("QR Code Generator")),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(16.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             TextField(
-              text: const Color.fromARGB(255, 255, 255, 255),
               controller: _customerInfoController,
-              decoration: InputDecoration(
-                labelText: "Enter Customer Info (e.g., ID or Name)",
-                border: OutlineInputBorder(),
-              ),
+              decoration: InputDecoration(labelText: "Enter Customer Info"),
             ),
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: _generateAndSaveQRCode,
               child: Text("Generate QR Code"),
             ),
-            SizedBox(height: 40),
-            if (_qrData.isNotEmpty)
-              Column(
+            SizedBox(height: 150),
+            Screenshot(
+              controller: _screenshotController,
+              child: Column(
                 children: [
-                  QrImageView(
-                    data: _qrData,
-                    version: QrVersions.auto,
-                    size: 200.0,
-                  ),
-                  SizedBox(height: 20),
-                  Text(
-                    "QR Code Generator",
-                    textAlign: TextAlign.center,
+                  if (_qrData.isNotEmpty)
+                    QrImageView(
+                      data: _qrData,
+                      version: QrVersions.auto,
+                      size: 200.0,
+                    ),
+                  SizedBox(height: 10),
+                  ElevatedButton(
+                    onPressed: _downloadQRCode,
+                    child: Text("Download QR Code"),
                   ),
                 ],
               ),
+            ),
           ],
         ),
       ),
