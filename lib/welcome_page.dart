@@ -29,7 +29,7 @@ class WelcomePage extends StatelessWidget {
                   "WELCOME TO SCANTRON PATRON",
                   style: TextStyle(
                     color: Colors.black,
-                    fontSize: 35,
+                    fontSize: 50,
                     fontWeight: FontWeight.w800,
                     letterSpacing: 1,
                   ),
@@ -57,14 +57,14 @@ class WelcomePage extends StatelessWidget {
                     "LOG IN SCAN",
                     style: TextStyle(
                       color: Colors.black,
-                      fontSize: 16,
+                      fontSize: 25,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 1,
                     ),
                   ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                   ),
                 ),
               ],
@@ -82,7 +82,7 @@ class WelcomePage extends StatelessWidget {
                 "Admin",
                 style: TextStyle(
                   color: Colors.black,
-                  fontSize: 16,
+                  fontSize: 20,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 1,
                 ),
@@ -124,7 +124,7 @@ class WelcomePage extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                       builder: (context) => AdminPage(
-                        student: Student(id: "1", name: "Test Student", year: 1, remainingSheets: 30),
+                        student: Student(id: "1", name: "Test Student", year: 1, remainingSheets: 30, program: ''),
                       ),
                     ),
                   );

@@ -18,6 +18,9 @@ class QrScannerState extends State<QrScanner> {
   bool _isNavigating = false;
   bool _scannerPaused = false; // Flag to control the QR scanner
 
+  // MobileScannerController to control the camera facing
+  final MobileScannerController _controller = MobileScannerController();
+
   // Function to verify the QR code from the combined string
   Future<void> _verifyQRCode(String qrCode) async {
     setState(() => _scannerPaused = true); // Pause scanner
@@ -110,7 +113,7 @@ class QrScannerState extends State<QrScanner> {
           id: studentId,
           name: data?['name'] ?? '',
           year: int.tryParse(data?['yearlevel'] ?? '1') ?? 1,
-          remainingSheets: data?['remainingSheets'] ?? 0,
+          remainingSheets: data?['remainingSheets'] ?? 0, program: '',
         );
       } else {
         throw 'Student not found';
@@ -147,6 +150,13 @@ class QrScannerState extends State<QrScanner> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    // Initialize the controller and switch to the front camera
+    _controller.start();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: bgColor,
@@ -175,16 +185,16 @@ class QrScannerState extends State<QrScanner> {
             const SizedBox(height: 12),
             const SizedBox(height: 20),
             Container(
-              width: 200,
-              height: 200,
+              width: 400,
+              height: 400,
               decoration: BoxDecoration(
                 border: Border.all(
                   color: Colors.black,
                   width: 3,
                 ),
-                borderRadius: BorderRadius.circular(20),
               ),
               child: MobileScanner(
+                controller: _controller,
                 onDetect: (BarcodeCapture capture) {
                   final barcodes = capture.barcodes;
                   if (barcodes.isNotEmpty && !_scannerPaused) {

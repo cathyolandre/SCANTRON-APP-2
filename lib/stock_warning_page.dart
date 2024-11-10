@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:orderapp/qr_scanner.dart';
-import 'welcome_page.dart';  // Import the page where the QR scanner is located
+// Import the page where the QR scanner is located
 import 'customer_support_page.dart';  // Import the Customer Support page
 
 class StockWarningPage extends StatelessWidget {

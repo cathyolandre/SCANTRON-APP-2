@@ -5,90 +5,258 @@ import 'package:orderapp/welcome_page.dart';
 class ReceiptScreen extends StatelessWidget {
   final int orderQuantity;
   final double totalPrice;
+  final Student student;
+  final double amountPaid; // The amount the student paid
 
-  // Constructor to pass order quantity and total price to the ReceiptScreen
   const ReceiptScreen({
     super.key,
     required this.orderQuantity,
     required this.totalPrice,
-    required Student student,
+    required this.student,
+    required this.amountPaid,  // Expect the amountPaid here
   });
 
   @override
   Widget build(BuildContext context) {
+    // Calculate the change due
+    double changeDue = amountPaid - totalPrice;
+
+    // Generate a unique counter (for demonstration purposes, we'll just use a fixed counter here)
+    int counter = 1; // This should ideally come from a database or increment with each new receipt
+
+    // Format the Sale Invoice Number: "SP" + Year + Counter
+    String saleInvoiceNumber = 'SP${DateTime.now().year.toString().substring(2)}${counter.toString().padLeft(6, '0')}';
+
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Receipt Header
-            Text(
-              'Receipt',
-              style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 20),
-            
-            // Order details
-            Text(
-              'Item: Scantron Paper',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-            ),
-            Text(
-              'Quantity: $orderQuantity',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+            const SizedBox(height: 150), // Space at the top for centering
+
+            // Header Section with IABF Student Council on the left and Sale Invoice # on the right
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'IABF Student Council',
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Institute of Accounts, Business and Finance',
+                      style: TextStyle(fontSize: 14),
+                    ),
+                  ],
+                ),
+                Text(
+                  'Sale Invoice #: $saleInvoiceNumber', // Updated invoice number format
+                  style: TextStyle(fontSize: 16),
+                ),
+              ],
             ),
 
-            SizedBox(height: 40),
-            Divider(),
-            SizedBox(height: 5),
+            const SizedBox(height: 20),
 
-            // Price per item
+            // Student Details Section
             Text(
-              'Price per item: ₱5.00',  // Fixed price for paper
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
-            ),
-
-            // Total Price
-            Text(
-              'Total: ₱${totalPrice.toStringAsFixed(2)}',  // Total price
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: Colors.green,
-              ),
-            ),
-            SizedBox(height: 20),
-
-            // Thank you message
-            Text(
-              'Thank you for your order!',
+              'Issued to',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 50),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'Name: ${student.name}',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ),
+                const SizedBox(width: 10),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'Student Number: ${student.id}',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    'Order Date: ${DateTime.now().toString().split(' ')[0]}',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
 
-            // Option to go back to the main screen or home
-            Center(
-              child: ElevatedButton.icon(
+            // Table Header
+            Container(
+              decoration: BoxDecoration(
+                border: Border.all(),
+                color: Colors.grey.shade300,
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    flex: 5,
+                    child: Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Text(
+                        'Description',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 2,
+                    child: Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Text(
+                        'Quantity',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 3,
+                    child: Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Text(
+                        'Amount',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Table Row
+            Container(
+              decoration: BoxDecoration(
+                border: Border.all(),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    flex: 5,
+                    child: Padding(
+                      padding: const EdgeInsets.all(40.0),
+                      child: Text(
+                        'Scantron Sheet/s',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 2,
+                    child: Padding(
+                      padding: const EdgeInsets.all(40.0),
+                      child: Text(
+                        '$orderQuantity',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 3,
+                    child: Padding(
+                      padding: const EdgeInsets.all(40.0),
+                      child: Text(
+                        '₱${totalPrice.toStringAsFixed(2)}',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 20), // Space between table and footer
+
+            // Total Amount Section
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Text(
+                  'Total Amount: ₱${totalPrice.toStringAsFixed(2)}',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10), // Space between amounts
+
+            // Amount Paid Section
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Text(
+                  'Amount Paid: ₱${amountPaid.toStringAsFixed(2)}',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+
+            // Change Due Section
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Text(
+                  'Change Due: ₱${changeDue.toStringAsFixed(2)}',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.green),
+                ),
+              ],
+            ),
+
+            const Spacer(), // Pushes the remaining content to the bottom
+
+            // Add the SCANTRON PATRON MACHINE text at the bottom, centered
+            Align(
+              alignment: Alignment.bottomCenter, // Aligns it to the bottom center
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  'SCANTRON PATRON MACHINE',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+              ),
+            ),
+
+            // Space between text and button
+            const SizedBox(height: 10),
+
+            // Back to Welcome Page Button, centered at the bottom
+            Align(
+              alignment: Alignment.bottomCenter, // Aligns it to the bottom center
+              child: ElevatedButton(
                 onPressed: () {
-                  Navigator.push(
+                  Navigator.pushAndRemoveUntil(
                     context,
-                    MaterialPageRoute(builder: (context) => WelcomePage()),
+                    MaterialPageRoute(builder: (context) => const WelcomePage()),
+                    (route) => false,
                   );
                 },
-                icon: Icon(
-                  Icons.home, 
-                  color: Colors.black, 
-                  size: 24, // Adjust icon size as needed
-                ),
-                label: SizedBox.shrink(), // No text label, just the icon
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  padding: EdgeInsets.symmetric(vertical: 15, horizontal: 25), // Adjust button padding
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30), // Optional: rounded corners for button
-                  ),
+                  backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+                  padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                ),
+                child: const Text('Back to Welcome Page',
+                  style: TextStyle(color: Colors.white),
                 ),
               ),
             ),

@@ -4,8 +4,8 @@ import 'models/student.dart';
 import 'models/stock_provider.dart';
 import 'package:provider/provider.dart';
 import 'receipt_screen.dart';
-import 'welcome_page.dart';  // Import the WelcomePage for navigation
-import 'package:cloud_firestore/cloud_firestore.dart';  // Add Firestore import
+import 'welcome_page.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class OrderScreen extends StatefulWidget {
   final Student student;
@@ -20,15 +20,9 @@ class OrderScreenState extends State<OrderScreen> {
   final OrderCounter _orderCounter = OrderCounter();
   final double pricePerItem = 5.0;
 
-  // Function to update remaining sheets in Firestore
   Future<void> _updateRemainingSheetsInFirestore(Student student) async {
-    // Reference to Firestore document for the student
     final studentDocRef = FirebaseFirestore.instance.collection('student.json').doc(student.id);
-
-    // Update the remainingSheets field in Firestore
-    await studentDocRef.update({
-      'remainingSheets': student.remainingSheets,
-    });
+    await studentDocRef.update({'remainingSheets': student.remainingSheets});
   }
 
   @override
@@ -36,88 +30,135 @@ class OrderScreenState extends State<OrderScreen> {
     double totalPrice = _orderCounter.orderCount * pricePerItem;
     final stockProvider = Provider.of<StockProvider>(context, listen: false);
 
-    return WillPopScope(  // Using WillPopScope to intercept the back button press
+    return WillPopScope(
       onWillPop: () async {
-        // Navigate to WelcomePage when the back button is pressed
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => const WelcomePage()),
-          (route) => false, // Removes all previous routes
+          (route) => false,
         );
-        return Future.value(false);  // Prevent default back navigation
+        return Future.value(false);
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text('SCANTRON ORDER'),
+          title: const Text('SCANTRON ORDER'),
           centerTitle: true,
+          actions: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                'SCANTRON PATRON MACHINE',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ],
         ),
         body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Displaying the Student ID
-              Text(
-                'Student ID: ${widget.student.id}', 
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 10), // Space between ID and remaining sheets text
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // Centered Text for Student ID
+                Text(
+                  'Student ID: ${widget.student.id}',
+                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 20),
+                // Centered Text for Order Limit
+                Text(
+                  'Order Limit: ${widget.student.remainingSheets}',
+                  style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.red),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 10),
+                const Text(
+                  'Order Quantity:',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 40),
+                // Row for Quantity Controls (Add and Decrement buttons)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      onPressed: () => setState(() => _orderCounter.decrement()),
+                      icon: const Icon(Icons.remove),
+                      iconSize: 50,
+                    ),
+                    const SizedBox(width: 20),
+                    Text(
+                      '${_orderCounter.orderCount}',
+                      style: const TextStyle(fontSize: 60, color: Colors.blue),
+                    ),
+                    const SizedBox(width: 20),
+                    IconButton(
+                      onPressed: () => setState(() => _orderCounter.increment()),
+                      icon: const Icon(Icons.add),
+                      iconSize: 50,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 40),
+                // Centered Total Price Text
+                Text(
+                  'Total Price: ₱${totalPrice.toStringAsFixed(2)}',
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 44, 101, 45)),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 20),
+                // Center the button
+                ElevatedButton(
+                  onPressed: () async {
+                    int currentStock = stockProvider.stock;
+                    if (_orderCounter.orderCount <= widget.student.remainingSheets &&
+                        _orderCounter.orderCount <= currentStock &&
+                        _orderCounter.orderCount > 0) {
+                      stockProvider.restock(currentStock - _orderCounter.orderCount);
+                      widget.student.remainingSheets -= _orderCounter.orderCount;
 
-              // Displaying the Remaining Sheets
-              Text(
-                'Your order limit is at: ${widget.student.remainingSheets}', 
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red),
-              ),
-              SizedBox(height: 20), // Space between Remaining Sheets and Order Quantity
+                      // Update Firestore
+                      await _updateRemainingSheetsInFirestore(widget.student);
 
-              Text('Order Quantity:', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              Text('${_orderCounter.orderCount}', style: TextStyle(fontSize: 40, color: Colors.blue)),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  IconButton(
-                    onPressed: () => setState(() => _orderCounter.decrement()),
-                    icon: Icon(Icons.remove),
-                  ),
-                  IconButton(
-                    onPressed: () => setState(() => _orderCounter.increment()),
-                    icon: Icon(Icons.add),
-                  ),
-                ],
-              ),
-              Text('Total Price: ₱${totalPrice.toStringAsFixed(2)}', style: TextStyle(fontSize: 18, color: Colors.green)),
-              ElevatedButton(
-                onPressed: () {
-                  int currentStock = stockProvider.stock;
-                  if (_orderCounter.orderCount <= widget.student.remainingSheets &&
-                      _orderCounter.orderCount <= currentStock) {
-                    stockProvider.restock(currentStock - _orderCounter.orderCount);
-                    widget.student.remainingSheets -= _orderCounter.orderCount;
+                      // Add transaction
+                      stockProvider.addTransaction(_orderCounter.orderCount, totalPrice, widget.student.id);
 
-                    // Update Firestore to reflect the remaining sheets after the order
-                    _updateRemainingSheetsInFirestore(widget.student);
-
-                    // Add student ID to the transaction
-                    stockProvider.addTransaction(_orderCounter.orderCount, totalPrice, widget.student.id);
-
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ReceiptScreen(
-                          orderQuantity: _orderCounter.orderCount,
-                          totalPrice: totalPrice,
-                          student: widget.student,
+                      // Navigate to ReceiptScreen with required arguments
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ReceiptScreen(
+                            orderQuantity: _orderCounter.orderCount,
+                            totalPrice: totalPrice,
+                            student: widget.student,
+                            amountPaid: totalPrice, // Pass total price as amount paid
+                          ),
                         ),
-                      ),
-                    );
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Not enough stock available or insufficient sheets remaining')),
-                    );
-                  }
-                },
-                child: Text("Place Order"),
-              ),
-            ],
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Not enough stock available or insufficient sheets remaining')),
+                      );
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+                    padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                  ),
+                  child: const Text(
+                    "Place Order",
+                    style: TextStyle(color: Color.fromARGB(255, 255, 255, 255)),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
