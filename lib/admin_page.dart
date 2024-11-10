@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:orderapp/qrgenerate.dart';
-import 'view_report_page.dart'; // Make sure this page exists if you have it for reports
-import 'inventory_page.dart'; // Make sure this page exists for inventory management
+import 'reset_sheet_limit_page.dart';  // Make sure this import is correct and used
+import 'view_report_page.dart';  
+import 'inventory_page.dart';  
+import 'models/student.dart' as student_model;  // Correct prefix
 
 class AdminPage extends StatelessWidget {
-  const AdminPage({super.key});
+  final student_model.Student student;  // Correctly refer to the student model
+
+  const AdminPage({super.key, required this.student});
 
   @override
   Widget build(BuildContext context) {
@@ -25,8 +28,8 @@ class AdminPage extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center, // Centers the column content vertically
-          crossAxisAlignment: CrossAxisAlignment.center, // Centers the content horizontally
+          mainAxisAlignment: MainAxisAlignment.center, 
+          crossAxisAlignment: CrossAxisAlignment.center, 
           children: [
             // Header
             Text(
@@ -35,13 +38,13 @@ class AdminPage extends StatelessWidget {
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
               ),
-              textAlign: TextAlign.center, // Centers the text horizontally
+              textAlign: TextAlign.center, 
             ),
             SizedBox(height: 30),
 
             // Button for viewing reports with rounded corners
             SizedBox(
-              width: double.infinity, // Make sure buttons take full width
+              width: double.infinity, 
               child: ElevatedButton.icon(
                 onPressed: () {
                   Navigator.push(
@@ -49,8 +52,8 @@ class AdminPage extends StatelessWidget {
                     MaterialPageRoute(builder: (context) => ViewReportPage()),
                   );
                 },
-                icon: Icon(Icons.receipt_long, color: Colors.black, size: 40), // Increased icon size
-                label: SizedBox.shrink(), // No text
+                icon: Icon(Icons.receipt_long, color: Colors.black, size: 40),
+                label: SizedBox.shrink(), 
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 243, 243, 243),
                   padding: EdgeInsets.symmetric(vertical: 50, horizontal: 20),
@@ -73,8 +76,8 @@ class AdminPage extends StatelessWidget {
                     MaterialPageRoute(builder: (context) => InventoryPage()),
                   );
                 },
-                icon: Icon(Icons.inventory, color: Colors.black, size: 40), // Increased icon size
-                label: SizedBox.shrink(), // No text
+                icon: Icon(Icons.inventory, color: Colors.black, size: 40),
+                label: SizedBox.shrink(), 
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 243, 243, 243),
                   padding: EdgeInsets.symmetric(vertical: 50, horizontal: 20),
@@ -87,18 +90,18 @@ class AdminPage extends StatelessWidget {
             ),
             SizedBox(height: 20),
 
-            //QR GEN
-             SizedBox(
-              width: double.infinity, // Make sure buttons take full width
+            // Button to reset sheet limit with rounded corners
+            SizedBox(
+              width: double.infinity, 
               child: ElevatedButton.icon(
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => QRCodeGenerationPage()),
+                    MaterialPageRoute(builder: (context) => ResetSheetLimitPage(student: student)),
                   );
                 },
-                icon: Icon(Icons.qr_code_rounded, color: Colors.black, size: 40), // Increased icon size
-                label: SizedBox.shrink(), // No text
+                icon: Icon(Icons.qr_code_rounded, color: Colors.black, size: 40),
+                label: SizedBox.shrink(),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 243, 243, 243),
                   padding: EdgeInsets.symmetric(vertical: 50, horizontal: 20),
@@ -113,13 +116,13 @@ class AdminPage extends StatelessWidget {
 
             // Button to navigate back to home with rounded corners
             SizedBox(
-              width: double.infinity, // Ensure full width for the button
+              width: double.infinity, 
               child: ElevatedButton.icon(
                 onPressed: () {
-                  Navigator.pop(context); // Go back to the previous screen
+                  Navigator.pop(context);
                 },
-                icon: Icon(Icons.home, color: Colors.black, size: 40), // Increased icon size
-                label: SizedBox.shrink(), // No text
+                icon: Icon(Icons.home, color: Colors.black, size: 40),
+                label: SizedBox.shrink(),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 243, 243, 243),
                   padding: EdgeInsets.symmetric(vertical: 50, horizontal: 20),

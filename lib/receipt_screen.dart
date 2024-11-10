@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:orderapp/qr_scanner.dart';
+import 'package:orderapp/models/student.dart';
+import 'package:orderapp/welcome_page.dart';
 
 class ReceiptScreen extends StatelessWidget {
   final int orderQuantity;
@@ -10,6 +11,7 @@ class ReceiptScreen extends StatelessWidget {
     super.key,
     required this.orderQuantity,
     required this.totalPrice,
+    required Student student,
   });
 
   @override
@@ -42,6 +44,7 @@ class ReceiptScreen extends StatelessWidget {
             Divider(),
             SizedBox(height: 5),
 
+            // Price per item
             Text(
               'Price per item: ₱5.00',  // Fixed price for paper
               style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
@@ -65,32 +68,30 @@ class ReceiptScreen extends StatelessWidget {
             ),
             SizedBox(height: 50),
 
-               // Option to go back to the main screen or home
-           Center(
-            child: ElevatedButton.icon(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => QrScanner()),
-                );
-              },
-              icon: Icon(
-                Icons.home, 
-                color: Colors.black, 
-                size: 24, // Adjust icon size as needed
-              ),
-              label: SizedBox.shrink(), // No text label, just the icon
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                padding: EdgeInsets.symmetric(vertical: 15, horizontal: 25), // Adjust button padding
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30), // Optional: rounded corners for button
+            // Option to go back to the main screen or home
+            Center(
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => WelcomePage()),
+                  );
+                },
+                icon: Icon(
+                  Icons.home, 
+                  color: Colors.black, 
+                  size: 24, // Adjust icon size as needed
+                ),
+                label: SizedBox.shrink(), // No text label, just the icon
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  padding: EdgeInsets.symmetric(vertical: 15, horizontal: 25), // Adjust button padding
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30), // Optional: rounded corners for button
+                  ),
                 ),
               ),
             ),
-          ),
-
-
           ],
         ),
       ),

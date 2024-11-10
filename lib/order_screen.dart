@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
-import 'models/order_counter.dart'; // Import the public OrderCounter class
-import 'receipt_screen.dart'; // Import the receipt screen
-import 'package:provider/provider.dart'; // Add provider import
-import 'models/stock_provider.dart'; // Add the StockProvider import
+import 'models/order_counter.dart';
+import 'models/student.dart';
+import 'models/stock_provider.dart';
+import 'package:provider/provider.dart';
+import 'receipt_screen.dart';
+import 'welcome_page.dart';  // Import the WelcomePage for navigation
+import 'package:cloud_firestore/cloud_firestore.dart';  // Add Firestore import
 
 class OrderScreen extends StatefulWidget {
-  const OrderScreen({super.key});
+  final Student student;
+
+  const OrderScreen({super.key, required this.student});
 
   @override
   OrderScreenState createState() => OrderScreenState();
@@ -15,121 +20,90 @@ class OrderScreenState extends State<OrderScreen> {
   final OrderCounter _orderCounter = OrderCounter();
   final double pricePerItem = 5.0;
 
+  // Function to update remaining sheets in Firestore
+  Future<void> _updateRemainingSheetsInFirestore(Student student) async {
+    // Reference to Firestore document for the student
+    final studentDocRef = FirebaseFirestore.instance.collection('student.json').doc(student.id);
+
+    // Update the remainingSheets field in Firestore
+    await studentDocRef.update({
+      'remainingSheets': student.remainingSheets,
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     double totalPrice = _orderCounter.orderCount * pricePerItem;
+    final stockProvider = Provider.of<StockProvider>(context, listen: false);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'SCANTRON ORDER',
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 18,
-            fontWeight: FontWeight.w500,
-            letterSpacing: 1,
-          ),
+    return WillPopScope(  // Using WillPopScope to intercept the back button press
+      onWillPop: () async {
+        // Navigate to WelcomePage when the back button is pressed
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const WelcomePage()),
+          (route) => false, // Removes all previous routes
+        );
+        return Future.value(false);  // Prevent default back navigation
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('SCANTRON ORDER'),
+          centerTitle: true,
         ),
-        centerTitle: true,
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Order Quantity:',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1,
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text('Order Quantity:', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              Text('${_orderCounter.orderCount}', style: TextStyle(fontSize: 40, color: Colors.blue)),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                    onPressed: () => setState(() => _orderCounter.decrement()),
+                    icon: Icon(Icons.remove),
+                  ),
+                  IconButton(
+                    onPressed: () => setState(() => _orderCounter.increment()),
+                    icon: Icon(Icons.add),
+                  ),
+                ],
               ),
-            ),
-            SizedBox(height: 20),
-            Text(
-              '${_orderCounter.orderCount}',
-              style: TextStyle(
-                fontSize: 40,
-                fontWeight: FontWeight.bold,
-                color: Colors.blue,
-              ),
-            ),
-            SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                IconButton(
-                  onPressed: () {
-                    setState(() {
-                      _orderCounter.decrement();
-                    });
-                  },
-                  icon: Icon(Icons.remove, color: Colors.black),
-                ),
-                SizedBox(width: 20),
-                IconButton(
-                  onPressed: () {
-                    setState(() {
-                      _orderCounter.increment();
-                    });
-                  },
-                  icon: Icon(Icons.add, color: Colors.black),
-                ),
-              ],
-            ),
-            SizedBox(height: 30),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 20),
-              child: Text(
-                'Total Price: ₱${totalPrice.toStringAsFixed(2)}',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.green,
-                  letterSpacing: 1,
-                ),
-              ),
-            ),
-            SizedBox(height: 1),
-            ElevatedButton(
-              onPressed: () {
-                int currentStock = Provider.of<StockProvider>(context, listen: false).stock;
+              Text('Total Price: ₱${totalPrice.toStringAsFixed(2)}', style: TextStyle(fontSize: 18, color: Colors.green)),
+              ElevatedButton(
+                onPressed: () {
+                  int currentStock = stockProvider.stock;
+                  if (_orderCounter.orderCount <= widget.student.remainingSheets &&
+                      _orderCounter.orderCount <= currentStock) {
+                    stockProvider.restock(currentStock - _orderCounter.orderCount);
+                    widget.student.remainingSheets -= _orderCounter.orderCount;
 
-                if (_orderCounter.orderCount <= currentStock) {
-                  Provider.of<StockProvider>(context, listen: false)
-                      .restock(currentStock - _orderCounter.orderCount);
+                    // Update Firestore to reflect the remaining sheets after the order
+                    _updateRemainingSheetsInFirestore(widget.student);
 
-                  // Save the transaction in StockProvider
-                  Provider.of<StockProvider>(context, listen: false).addTransaction(
-                    _orderCounter.orderCount,
-                    totalPrice,
-                  );
+                    stockProvider.addTransaction(_orderCounter.orderCount, totalPrice);
 
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ReceiptScreen(
-                        orderQuantity: _orderCounter.orderCount,
-                        totalPrice: totalPrice,
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ReceiptScreen(
+                          orderQuantity: _orderCounter.orderCount,
+                          totalPrice: totalPrice,
+                          student: widget.student,
+                        ),
                       ),
-                    ),
-                  );
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Not enough stock available')),
-                  );
-                }
-              },
-              child: Text(
-                "Place Order",
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w500,
-                  letterSpacing: 1,
-                ),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Not enough stock available or insufficient sheets remaining')),
+                    );
+                  }
+                },
+                child: Text("Place Order"),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

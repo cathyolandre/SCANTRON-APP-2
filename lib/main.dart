@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:orderapp/qr_scanner.dart';
+import 'package:flutter/material.dart'; // Import the QR scanner page
+import 'package:orderapp/welcome_page.dart'; // Import the WelcomePage
 import 'package:provider/provider.dart'; 
 import 'models/stock_provider.dart'; 
 import 'package:firebase_core/firebase_core.dart'; 
@@ -49,7 +49,7 @@ class MyApp extends StatelessWidget {
           elevation: 0.0,
         ),
       ),
-      home: const QrScanner(), // Start with the QR Scanner page
+      home: const WelcomePage(), // Start with the WelcomePage
       debugShowCheckedModeBanner: false,
       title: 'Scantron App',
     );
