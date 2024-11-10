@@ -30,7 +30,7 @@ class Student {
     int newRemainingSheets;
 
     // Set the new remaining sheets based on year level
-    switch (this.year) {
+    switch (year) {
       case 1:
         newRemainingSheets = 30;  // First year students get 30 sheets
         break;
@@ -48,26 +48,26 @@ class Student {
     }
 
     // Add any remaining sheets from the current order that were not used
-    newRemainingSheets += this.remainingSheets;
+    newRemainingSheets += remainingSheets;
 
     try {
       // Check if document exists before updating
-      var studentDoc = await FirebaseFirestore.instance.collection('student').doc(this.id).get();
+      var studentDoc = await FirebaseFirestore.instance.collection('student').doc(id).get();
       if (studentDoc.exists) {
         // Update Firestore with the new remaining sheets value
-        await FirebaseFirestore.instance.collection('student').doc(this.id).update({
+        await FirebaseFirestore.instance.collection('student').doc(id).update({
           'remainingSheets': newRemainingSheets,
         });
 
         // Update the student object with the new remaining sheets
         remainingSheets = newRemainingSheets;
       } else {
-        print("Student document not found: ${this.id}");
+        print("Student document not found: ${id}");
         throw "Student document not found";  // Throw error if document doesn't exist
       }
     } catch (e) {
       print("Error updating student document: $e");
-      throw e;  // Re-throw error for further handling
+      rethrow;  // Re-throw error for further handling
     }
   }
 
@@ -98,7 +98,7 @@ class Student {
           remainingSheets: data?['remainingSheets'] ?? 0,
         );
       } else {
-        print("Student document not found: ${this.id}");
+        print("Student document not found: ${id}");
         throw 'Student not found';
       }
     } catch (e) {

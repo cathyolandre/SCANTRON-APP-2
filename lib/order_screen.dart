@@ -55,6 +55,20 @@ class OrderScreenState extends State<OrderScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              // Displaying the Student ID
+              Text(
+                'Student ID: ${widget.student.id}', 
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 10), // Space between ID and remaining sheets text
+
+              // Displaying the Remaining Sheets
+              Text(
+                'Your order limit is at: ${widget.student.remainingSheets}', 
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red),
+              ),
+              SizedBox(height: 20), // Space between Remaining Sheets and Order Quantity
+
               Text('Order Quantity:', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               Text('${_orderCounter.orderCount}', style: TextStyle(fontSize: 40, color: Colors.blue)),
               Row(
@@ -82,7 +96,8 @@ class OrderScreenState extends State<OrderScreen> {
                     // Update Firestore to reflect the remaining sheets after the order
                     _updateRemainingSheetsInFirestore(widget.student);
 
-                    stockProvider.addTransaction(_orderCounter.orderCount, totalPrice);
+                    // Add student ID to the transaction
+                    stockProvider.addTransaction(_orderCounter.orderCount, totalPrice, widget.student.id);
 
                     Navigator.push(
                       context,

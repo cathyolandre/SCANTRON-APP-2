@@ -7,8 +7,9 @@ class Report {
   final int orderQuantity;
   final double totalPrice;
   final DateTime date;
+  final String studentId; // Added studentId to the Report model
 
-  Report({required this.orderQuantity, required this.totalPrice, required this.date});
+  Report({required this.orderQuantity, required this.totalPrice, required this.date, required this.studentId});
 }
 
 class ViewReportPage extends StatelessWidget {
@@ -26,10 +27,11 @@ class ViewReportPage extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           'Order Reports',
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(color: const Color.fromARGB(255, 255, 255, 255)),
         ),
         centerTitle: true,
-        backgroundColor: Colors.teal,
+        backgroundColor: const Color.fromARGB(255, 0, 63, 57),
+        iconTheme: const IconThemeData(color: Color.fromARGB(255, 255, 255, 255)),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -62,6 +64,7 @@ class ViewReportPage extends StatelessWidget {
                         children: [
                           Text('Quantity: ${report.orderQuantity}'),
                           Text('Total Price: ₱${report.totalPrice.toStringAsFixed(2)}'),
+                          Text('Student ID: ${report.studentId}', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue)), // Displaying the student ID
                         ],
                       ),
                     ),

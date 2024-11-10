@@ -100,7 +100,7 @@ class AdminPage extends StatelessWidget {
                     MaterialPageRoute(builder: (context) => ResetSheetLimitPage(student: student)),
                   );
                 },
-                icon: Icon(Icons.qr_code_rounded, color: Colors.black, size: 40),
+                icon: Icon(Icons.reset_tv_rounded, color: Colors.black, size: 40),
                 label: SizedBox.shrink(),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 243, 243, 243),

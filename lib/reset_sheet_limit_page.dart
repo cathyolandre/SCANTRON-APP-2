@@ -1,45 +1,71 @@
 import 'package:flutter/material.dart';
-import 'models/student.dart' as student_model;  // Import student model
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:orderapp/models/student.dart';
+
+const bgColor = Color(0xfffafafa);  // Match your background color style
+const buttonColor = Colors.blue;
+const textColor = Colors.black;
 
 class ResetSheetLimitPage extends StatefulWidget {
-  final student_model.Student student;  // Receiving the student model
-
-  const ResetSheetLimitPage({Key? key, required this.student}) : super(key: key);
+  const ResetSheetLimitPage({super.key, required Student student});
 
   @override
   _ResetSheetLimitPageState createState() => _ResetSheetLimitPageState();
 }
 
 class _ResetSheetLimitPageState extends State<ResetSheetLimitPage> {
-  late int remainingSheets;
-
-  @override
-  void initState() {
-    super.initState();
-    remainingSheets = widget.student.remainingSheets; // Accessing the remainingSheets field
+  // Function to get initial sheets based on year level
+  int getInitialSheets(int yearLevel) {
+    switch (yearLevel) {
+      case 1:
+        return 30;
+      case 2:
+        return 20;
+      case 3:
+        return 15;
+      case 4:
+        return 10;
+      default:
+        return 0;
+    }
   }
 
-  // Function to reset the sheet limit
-  void resetLimit() async {
+  // Function to reset all students' sheet limits, adding remaining balance with a max of 50
+  Future<void> resetAllStudentSheetLimits() async {
     try {
-      // Call the method to reset the remaining sheets
-      await widget.student.resetRemainingSheets();
+      final studentCollection = FirebaseFirestore.instance.collection('student.json');
+      
+      // Fetch all student documents
+      final studentsSnapshot = await studentCollection.get();
+      
+      for (var studentDoc in studentsSnapshot.docs) {
+        int yearLevel = int.tryParse(studentDoc.data()['yearlevel'].toString()) ?? 1;
+        int initialSheets = getInitialSheets(yearLevel);
+        int currentRemainingSheets = studentDoc.data()['remainingSheets'] ?? 0;
 
-      // Fetch the updated student data from Firestore
-      student_model.Student updatedStudent = await widget.student.getStudentFromFirestore();
+        // Calculate new remaining sheets with a maximum cap of 50
+        int updatedRemainingSheets = initialSheets + currentRemainingSheets;
+        if (updatedRemainingSheets > 50) {
+          updatedRemainingSheets = 50; // Cap the value at 50
+        }
 
-      // Update the UI with the new value
-      setState(() {
-        remainingSheets = updatedStudent.remainingSheets;
-      });
-
+        // Update each student's remainingSheets field
+        await studentCollection.doc(studentDoc.id).update({
+          'remainingSheets': updatedRemainingSheets,
+        });
+      }
+      
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Sheet limit has been reset!')),
+        const SnackBar(
+          content: Text('All students\' sheet limits have been reset with their remaining balance!'),
+        ),
       );
     } catch (e) {
-      print('Error resetting sheet limit: $e');
+      print('Error resetting sheet limits for all students: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to reset sheet limit!')),
+        const SnackBar(
+          content: Text('Failed to reset sheet limits!'),
+        ),
       );
     }
   }
@@ -47,57 +73,38 @@ class _ResetSheetLimitPageState extends State<ResetSheetLimitPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: bgColor,
       appBar: AppBar(
-        title: Text('Reset Sheet Limit'),
-        backgroundColor: Colors.black,
+        title: const Text(
+          'Reset All Sheet Limits',
+          style: TextStyle(color: Color.fromARGB(255, 255, 255, 255)),
+        ),
+        centerTitle: true,
+        backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+        iconTheme: const IconThemeData(color: Color.fromARGB(255, 255, 255, 255)),
+        elevation: 0,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Displaying current student info
-            Text(
-              'Student: ${widget.student.name}',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 20),
-            Text(
-              'Current Sheet Limit: $remainingSheets', // Use remainingSheets here
-              style: TextStyle(fontSize: 18),
-            ),
-            SizedBox(height: 30),
-
-            // Button to reset the sheet limit
             ElevatedButton(
-              onPressed: () {
-                resetLimit(); // Call the function to reset the limit
-              },
-              child: Text('Reset Sheet Limit'),
+              onPressed: resetAllStudentSheetLimits,
               style: ElevatedButton.styleFrom(
-                minimumSize: Size(double.infinity, 50),
-                padding: EdgeInsets.symmetric(vertical: 16),
-                backgroundColor: Colors.blue,  // Use backgroundColor instead of primary
+                backgroundColor: const Color.fromARGB(255, 129, 1, 16),
+                minimumSize: const Size(double.infinity, 50),
+                padding: const EdgeInsets.symmetric(vertical: 50),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
-            ),
-            SizedBox(height: 20),
-
-            // Back button
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);  // Go back to previous screen
-              },
-              child: Text('Back'),
-              style: ElevatedButton.styleFrom(
-                minimumSize: Size(double.infinity, 50),
-                padding: EdgeInsets.symmetric(vertical: 16),
-                backgroundColor: Colors.grey,  // Use backgroundColor instead of primary
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+              child: const Text(
+                'Reset All Sheet Limits',
+                style: TextStyle(
+                  color: Color.fromARGB(255, 255, 255, 255),
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),
